@@ -11,6 +11,47 @@ module ExpenseTracker
 
     let(:ledger) { instance_double('ExpenseTracker::Ledger') }
     let(:expense) { { 'some' => 'data' } }
+    let(:response_body) { JSON.parse(last_response.body) }
+    let(:date) { '2018-09-21' }
+    let(:data) do
+      {
+        'payee' => 'Zoo',
+        'amount' => 15.25,
+        'date' => '2017-06-10'
+      }
+    end
+
+    describe 'GET /expenses/:date' do
+      before do
+        allow(ledger).to receive(:expenses_on)
+        .with(date)
+        .and_return(data)
+      end
+      context 'when expenses exist on the given date' do
+        it 'returns the expense records as JSON' do
+          get "/expenses/#{date}"
+          expect(last_response.body).to include("Zoo")
+        end
+
+        it 'responds with a 200(ok)' do
+          get "/expenses/#{date}"
+          expect(last_response.status).to eq(200)
+        end
+      end
+
+      context 'when there are no expenses on the given date' do
+        let(:data) { [] }
+        it 'returns the expense records as JSON' do
+          get "/expenses/#{date}"
+          expect(last_response.body).to eq ('[]')
+        end
+
+        it 'responds with a 200(ok)' do
+          get "/expenses/#{date}"
+          expect(last_response.status).to eq(200)
+        end
+      end
+    end
 
     describe 'POST /expenses' do
       before do
@@ -22,7 +63,7 @@ module ExpenseTracker
         context 'when the expense is successfully recorded' do
           it 'returns the expense id' do
             post '/expenses', JSON.generate(expense)
-            parsed = JSON.parse(last_response.body)
+            parsed = response_body
             expect(parsed).to include('expense_id' => 417)
           end
 
@@ -42,7 +83,7 @@ module ExpenseTracker
         end
         it 'returns an error message' do
           post '/expenses', JSON.generate(expense)
-          parsed = JSON.parse(last_response.body)
+          parsed = response_body
           expect(parsed).to include('error' => 'Expense incomplete')
         end
         it 'responds with a 422 (Unprocessable entity)' do
