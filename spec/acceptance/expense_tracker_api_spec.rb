@@ -3,7 +3,7 @@ require 'json'
 require_relative '../../app/api'
 
 module ExpenseTracker
-  RSpec.describe 'Expense Tracker Api' do
+  RSpec.describe 'Expense Tracker Api', :db do
     include Rack::Test::Methods
     let(:response_body) { JSON.parse(last_response.body) }
 
@@ -34,7 +34,6 @@ module ExpenseTracker
     end
 
     it 'record submitted expenses' do
-      pending 'Need to persist expenses'
       coffee = post_expense(
         {
           'payee' => 'Starbucks',
@@ -59,8 +58,7 @@ module ExpenseTracker
     def post_expense(expense)
       post '/expenses', JSON.generate(expense)
       expect(last_response.status).to eq(200)
-
-      parsed =
+      parsed = JSON.parse(last_response.body)
       expect(parsed).to include('expense_id' => a_kind_of(Integer))
       expense.merge('id' => parsed['expense_id'])
     end
