@@ -51,6 +51,10 @@ RSpec.configure do |config|
   config.filter_run_when_matching :focus
   config.example_status_persistence_file_path = "spec/examples.txt"
 
+  config.when_first_matching_example_defined(:db) do
+    require_relative 'support/db'
+  end
+
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
 =begin
