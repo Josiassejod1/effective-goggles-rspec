@@ -1,6 +1,6 @@
 require_relative '../../../app/api'
 require 'rack/test'
-
+require  'active_support/core_ext/hash/conversions'
 module ExpenseTracker
   RSpec.describe API do
     include Rack::Test::Methods
@@ -24,13 +24,13 @@ module ExpenseTracker
     describe 'GET /expenses/:date' do
       before do
         allow(ledger).to receive(:expenses_on)
-        .with(date)
-        .and_return(data)
+          .with(date)
+          .and_return(data)
       end
       context 'when expenses exist on the given date' do
         it 'returns the expense records as JSON' do
           get "/expenses/#{date}"
-          expect(last_response.body).to include("Zoo")
+          expect(last_response.body).to include('Zoo')
         end
 
         it 'responds with a 200(ok)' do
@@ -43,7 +43,7 @@ module ExpenseTracker
         let(:data) { [] }
         it 'returns the expense records as JSON' do
           get "/expenses/#{date}"
-          expect(last_response.body).to eq ('[]')
+          expect(last_response.body).to eq('[]')
         end
 
         it 'responds with a 200(ok)' do

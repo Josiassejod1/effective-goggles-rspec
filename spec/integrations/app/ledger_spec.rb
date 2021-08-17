@@ -15,7 +15,7 @@ module ExpenseTracker
 
     describe '#record' do
       context 'with a valid expense' do
-        it 'successfully saves the expense in the DB' do
+        pit 'successfully saves the expense in the DB' do
           result = ledger.record(expense)
 
           expect(result).to be_success
